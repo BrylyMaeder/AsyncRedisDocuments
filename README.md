@@ -1,3 +1,7 @@
+## Available on Nuget
+```csharp
+https://www.nuget.org/packages/AsyncRedisDocuments/1.0.0
+```
 
 # Async Redis Documents
 

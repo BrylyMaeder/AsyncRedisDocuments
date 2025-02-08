@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sample
 {
-    public class Car : IAsyncDocument
+    public class Car : IAsyncDocument, IDeletionListener
     {
         public string Id { get; set; }
 
@@ -15,10 +15,17 @@ namespace Sample
         public UniqueProperty<string> DisplayName => new(this);
 
         public AsyncProperty<ComplexModel> Model => new(this);
+
+        public AsyncLink<User> MyLinkedUser => new(this);
         
         public string IndexName()
         {
             return "cars";
+        }
+
+        public Task OnDeleted()
+        {
+            throw new NotImplementedException();
         }
     }
 }

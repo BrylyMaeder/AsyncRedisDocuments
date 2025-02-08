@@ -10,3 +10,6 @@ var user = new User
 {
     Id = "myUser",
 };
+
+var car = new Car();
+

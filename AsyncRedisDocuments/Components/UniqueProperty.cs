@@ -29,7 +29,7 @@ namespace AsyncRedisDocuments
                     break;
             }
 
-            bool exists = await QueryExecutor.ContainsAsync(query, _indexName);
+            bool exists = await query.ContainsAsync(_indexName);
             if (exists)
                 return false;
 

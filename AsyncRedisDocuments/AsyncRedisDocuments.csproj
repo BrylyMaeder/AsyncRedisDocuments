@@ -3,9 +3,24 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Title>Async Redis Documents</Title>
+    <Description>Easily create data-driven models using asynchronous programming architecture, easily perform complex queries on your models and use them with ease.</Description>
+    <PackageProjectUrl>https://github.com/BrylyMaeder/AsyncRedisDocuments</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/BrylyMaeder/AsyncRedisDocuments</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>Redis, Async, Database, Cache, Speed</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="Components\AsyncLinkSet.cs" />
   </ItemGroup>
 
