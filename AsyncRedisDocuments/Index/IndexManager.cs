@@ -15,9 +15,6 @@ namespace AsyncRedisDocuments.Index
 {
     public static class IndexManager
     {
-        private static readonly List<IndexDocument> _indexData = new List<IndexDocument>();
-        private static readonly object _lock = new object();
-
         /// <summary>
         /// Ensures indexes are created for all IAsyncDocument types with indexable properties.
         /// </summary>
@@ -43,27 +40,17 @@ namespace AsyncRedisDocuments.Index
         public static async Task EnsureIndexAsync(IAsyncDocument document)
         {
             var indexName = document.IndexName();
-
-            if (_indexData.Any(s => s.Id.Equals(indexName)))
-                return;
-
-            await LoadIndexData();
-
             var result = IndexDefinitionBuilder.Build(document.GetType());
 
-            var index = _indexData.FirstOrDefault(x => x.Id.Equals(indexName));
+            var index = new IndexDocument { Id = indexName };
 
-            if (index == null)
-            {
-                // Index doesn't exist, create it
-                await CreateNewIndexAsync(indexName, result.IndexDefinition, result.IndexHash);
-            }
-            else if (await index.RequiresUpdate(result.IndexHash))
+            if (await index.RequiresUpdate(result.IndexHash))
             {
                 // Index exists but is outdated, update it
                 await UpdateIndexAsync(indexName, result.IndexDefinition, result.IndexHash);
             }
         }
+
 
         /// <summary>
         /// Gets all properties in a type that implement IIndexable.
@@ -84,21 +71,6 @@ namespace AsyncRedisDocuments.Index
                 .Where(type => typeof(IAsyncDocument).IsAssignableFrom(type) && type.IsClass && !type.IsAbstract);
         }
 
-        private static async Task LoadIndexData()
-        {
-            // Fetch the current list of indexes from Redis
-            var indexNames = await RedisSingleton.Database.ListIndexesAsync();
-
-            lock (_lock)
-            {
-                _indexData.Clear();
-                foreach (var indexName in indexNames)
-                {
-                    _indexData.Add(new IndexDocument { Id = indexName });
-                }
-            }
-        }
-
         private static async Task<IndexDocument> CreateNewIndexAsync(string indexName, RediSearchIndexDefinition definition, string hash)
         {
             // Create a new index on Redis
@@ -112,18 +84,20 @@ namespace AsyncRedisDocuments.Index
 
             await indexDocument.LastUpdated.SetAsync(DateTime.UtcNow);
 
-            lock (_lock)
-            {
-                _indexData.Add(indexDocument);
-            }
-
             return indexDocument;
         }
 
         private static async Task UpdateIndexAsync(string indexName, RediSearchIndexDefinition definition, string hash)
         {
-            // Drop and recreate the index for changes
-            await RedisSingleton.Database.DropIndexAsync(indexName);
+            try
+            {
+                // Drop and recreate the index for changes
+                await RedisSingleton.Database.DropIndexAsync(indexName);
+            }
+            catch 
+            {
+                // Probably wasn't an index available. doesn't matter, we just don't care bro
+            }
             await CreateNewIndexAsync(indexName, definition, hash);
         }
     }

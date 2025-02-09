@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AsyncRedisDocuments.Components;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -6,15 +7,14 @@ using System.Threading.Tasks;
 
 namespace AsyncRedisDocuments
 {
-    public class AsyncLink<TDocument> where TDocument : IAsyncDocument
+    public class AsyncLink<TDocument> : BaseComponent where TDocument : IAsyncDocument
     {
         protected readonly IAsyncDocument _asyncDocument;
         protected readonly string _linkName;
 
-        public AsyncLink(IAsyncDocument document, [CallerMemberName] string linkName = "")
+        public AsyncLink(IAsyncDocument document, [CallerMemberName] string propertyName = "") : base(document, propertyName) 
         {
-            _asyncDocument = document;
-            _linkName = linkName;
+
         }
 
         public virtual async Task SetAsync(string id)
@@ -45,7 +45,7 @@ namespace AsyncRedisDocuments
             if (string.IsNullOrEmpty(documentId))
                 return default;
 
-            var document = AsyncDocumentFactory.Create<TDocument>(documentId);
+            var document = DocumentFactory.Create<TDocument>(documentId);
             if (!await document.ExistsAsync())
                 return default;
 

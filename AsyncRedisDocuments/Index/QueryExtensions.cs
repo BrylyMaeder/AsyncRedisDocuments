@@ -13,12 +13,12 @@ namespace AsyncRedisDocuments.Index
     {
         public static async Task<List<TDocument>> SearchAsync<TDocument>(this Query<TDocument> query) where TDocument : IAsyncDocument, new()
         {
-            var tempInstance = AsyncDocumentFactory.Create<TDocument>(null);
+            var tempInstance = DocumentFactory.Create<TDocument>(null);
             var indexName = tempInstance.IndexName();
 
             var results = await SearchAsync(indexName, query);
 
-            return results.Select(id => AsyncDocumentFactory.Create<TDocument>(id)).ToList();
+            return results.Select(id => DocumentFactory.Create<TDocument>(id)).ToList();
         }
 
         public static async Task<List<string>> SearchAsync(this Query query, string indexName)

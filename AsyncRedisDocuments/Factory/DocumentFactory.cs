@@ -5,7 +5,7 @@ using System.Text;
 
 namespace AsyncRedisDocuments
 {
-    public static class AsyncDocumentFactory
+    public static class DocumentFactory
     {
         public static TDocument Create<TDocument>(string id) where TDocument : IAsyncDocument 
         {

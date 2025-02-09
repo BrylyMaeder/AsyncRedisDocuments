@@ -18,6 +18,11 @@ namespace AsyncRedisDocuments.Index
                 throw new ArgumentException("Fuzzy level must be between 0 and 3.");
 
             string escapedValue = EscapeSpecialCharacters(value);
+            if (escapedValue.Length > 3)
+                escapedValue = $"{escapedValue}*";
+            else if (escapedValue.Length > 10)
+                escapedValue = $"*{escapedValue}*";
+
             string fuzzyValue = new string('%', fuzzyLevel) + escapedValue + new string('%', fuzzyLevel);
             _clauses.Add($"@{propertyName}:'{fuzzyValue}'");
             return this;
@@ -73,9 +78,8 @@ namespace AsyncRedisDocuments.Index
         {
             if (string.IsNullOrEmpty(input)) return input;
 
-            // Escape Redis special characters used in queries
             return input
-                .Replace("\\", "\\\\") // Escape backslashes first
+                .Replace("\\", "\\\\")
                 .Replace("-", "\\-")
                 .Replace(":", "\\:")
                 .Replace("\"", "\\\"")
@@ -95,8 +99,10 @@ namespace AsyncRedisDocuments.Index
                 .Replace("*", "\\*")
                 .Replace("?", "\\?")
                 .Replace("^", "\\^")
-                .Replace("$", "\\$");
+                .Replace("$", "\\$")
+                .Replace("@", "\\@"); 
         }
+
     }
 
     public class Query<TDocument> : Query where TDocument : IAsyncDocument, new()

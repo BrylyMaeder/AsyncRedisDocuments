@@ -24,7 +24,7 @@ namespace AsyncRedisDocuments.Index
 
         public static async Task<List<TDocument>> GetAllAsync<TDocument>() where TDocument : IAsyncDocument
         {
-            var tempInstance = AsyncDocumentFactory.Create<TDocument>(null);
+            var tempInstance = DocumentFactory.Create<TDocument>(null);
             var indexName = tempInstance.IndexName();
 
             var pattern = $"{indexName}:*";
@@ -48,7 +48,7 @@ namespace AsyncRedisDocuments.Index
                     // Skip keys that have more than one colon (indexName:id:somethingElse)
                     if (!keyString.Contains(":") || keyString.Count(c => c == ':') > 1) continue;
 
-                    var document = AsyncDocumentFactory.Create<TDocument>(key);
+                    var document = DocumentFactory.Create<TDocument>(key);
                     results.Add(document);
                 }
 

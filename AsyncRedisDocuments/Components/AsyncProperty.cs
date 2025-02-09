@@ -1,15 +1,13 @@
-﻿using System;
+﻿using AsyncRedisDocuments.Components;
+using System;
 using System.Threading.Tasks;
 
 namespace AsyncRedisDocuments
 {
-    public class AsyncProperty<TValue>
+    public class AsyncProperty<TValue> : BaseComponent
     {
         protected readonly TValue _defaultValue;
-        protected string _propertyName;
-        protected string _documentKey;
 
-        protected readonly IAsyncDocument _document;
         readonly Func<TValue, Task<TValue>> _getProcessingTask;
         readonly Func<TValue, Task<TValue>> _setProcessingTask;
 
@@ -17,12 +15,9 @@ namespace AsyncRedisDocuments
             TValue defaultValue = default,
             Func<TValue, Task<TValue>> getProcessingTask = null,
             Func<TValue, Task<TValue>> setProcessingTask = null,
-            [System.Runtime.CompilerServices.CallerMemberName] string propertyName = null)
+            [System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) : base(document, propertyName)
         {
-            _document = document;
-            _documentKey = document.GetKey();
             _defaultValue = defaultValue;
-            _propertyName = propertyName;
             _getProcessingTask = getProcessingTask;
             _setProcessingTask = setProcessingTask;
         }

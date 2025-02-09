@@ -26,16 +26,22 @@ namespace AsyncRedisDocuments
             }
 
             var properties = document.GetType().GetProperties();
-            // iterate all components and delete them.
+
+            // Iterate all components and delete them
             foreach (var property in properties)
             {
-                // Check if the property is of a type that implements IDeletable
-                if (property.CanRead && property.GetValue(document) is IDeletable deletable)
+                // Check if the property is readable and of a type that implements IDeletable
+                if (property.CanRead)
                 {
-                    // If it's a deletable, call DeleteAsync on the IDeletable instance
-                    //await deletable.DeleteAsync();
+                    var value = property.GetValue(document);
+                    if (value is IDeletable deletable)
+                    {
+                        // Call DeleteAsync on the IDeletable instance
+                        await deletable.DeleteAsync();
+                    }
                 }
             }
+
 
             const int batchSize = 100; //Cleanup dead keys
             var cursor = 0L;

@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using AsyncRedisDocuments.Components;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,43 +10,41 @@ using System.Threading.Tasks;
 
 namespace AsyncRedisDocuments
 {
-    public class AsyncLinkSet<TDocument> where TDocument : IAsyncDocument
+    public class AsyncLinkSet<TDocument> : BaseComponent where TDocument : IAsyncDocument
     {
-        protected readonly string _setKey;
-
-        public AsyncLinkSet(IAsyncDocument document, [CallerMemberName] string listName = "")
+        public AsyncLinkSet(IAsyncDocument document, [CallerMemberName] string propertyName = "") : base(document, propertyName)
         {
-            _setKey = $"{document.GetKey()}:{listName}";
+
         }
 
         public async Task SetAsync(List<TDocument> documents)
         {
-            await RedisSingleton.Database.KeyDeleteAsync(_setKey); // Clear existing set
+            await RedisSingleton.Database.KeyDeleteAsync(_fullKey); // Clear existing set
 
             if (documents != null && documents.Any())
             {
                 var documentKeys = documents.Select(doc => (RedisValue)doc.Id).ToArray();
-                await RedisSingleton.Database.SetAddAsync(_setKey, documentKeys);
+                await RedisSingleton.Database.SetAddAsync(_fullKey, documentKeys);
             }
         }
 
         public async Task<List<TDocument>> GetAllAsync()
         {
-            var documentIds = await RedisSingleton.Database.SetMembersAsync(_setKey);
-            return documentIds.Select(value => AsyncDocumentFactory.Create<TDocument>(value.ToString())).ToList();
+            var documentIds = await RedisSingleton.Database.SetMembersAsync(_fullKey);
+            return documentIds.Select(value => DocumentFactory.Create<TDocument>(value.ToString())).ToList();
         }
         public async Task<bool> ContainsAsync(IAsyncDocument document) => await ContainsAsync(document.Id);
 
         public async Task<bool> ContainsAsync(string id)
         {
-            return await RedisSingleton.Database.SetContainsAsync(_setKey, id);
+            return await RedisSingleton.Database.SetContainsAsync(_fullKey, id);
         }
 
         public async Task<bool> AddAsync(TDocument document)
         {
             if (document == null) return false;
 
-            return await RedisSingleton.Database.SetAddAsync(_setKey, document.Id);
+            return await RedisSingleton.Database.SetAddAsync(_fullKey, document.Id);
         }
 
         public async Task<TDocument> GetAsync(IAsyncDocument document) => await GetAsync(document.Id);
@@ -55,24 +54,24 @@ namespace AsyncRedisDocuments
             if (!await ContainsAsync(id))
                 return default;
 
-            return AsyncDocumentFactory.Create<TDocument>(id);
+            return DocumentFactory.Create<TDocument>(id);
         }
 
         public async Task<bool> RemoveAsync(IAsyncDocument document) => await RemoveAsync(document.Id);
 
         public async Task<bool> RemoveAsync(string id)
         {
-            return await RedisSingleton.Database.SetRemoveAsync(_setKey, id);
+            return await RedisSingleton.Database.SetRemoveAsync(_fullKey, id);
         }
 
         public async Task<int> CountAsync()
         {
-            return (int)await RedisSingleton.Database.SetLengthAsync(_setKey);
+            return (int)await RedisSingleton.Database.SetLengthAsync(_fullKey);
         }
 
         public async Task ClearAsync()
         {
-            await RedisSingleton.Database.KeyDeleteAsync(_setKey);
+            await RedisSingleton.Database.KeyDeleteAsync(_fullKey);
         }
     }
 

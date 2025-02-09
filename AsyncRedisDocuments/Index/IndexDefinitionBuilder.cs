@@ -18,14 +18,15 @@ namespace AsyncRedisDocuments.Index
             var properties = GetProperties(documentType);
             var builder = new RediSearchSchemaFieldBuilder();
 
-            // Use a StringBuilder to collect schema details for hashing
+            // Use a StringBuilder to collect schema details for Base64 encoding
             var schemaDetailsBuilder = new StringBuilder();
 
             foreach (var pair in properties)
             {
                 IRediSearchSchemaField field = null;
 
-                switch (pair.Value)
+                var data = pair.Value;
+                switch (data.IndexType)
                 {
                     case IndexType.Tag:
                         field = builder.Tag(pair.Key);
@@ -40,8 +41,8 @@ namespace AsyncRedisDocuments.Index
 
                 schemaFields.Add(field);
 
-                // Append details deterministically for hashing
-                schemaDetailsBuilder.Append(pair.Key).Append(":").Append(pair.Value).Append(";");
+                // Append details deterministically for Base64 encoding
+                schemaDetailsBuilder.Append(pair.Key).Append(":").Append(pair.Value.ClassType).Append(pair.Value.IndexType).Append(";");
             }
 
             if (schemaFields.Count == 0)
@@ -49,8 +50,8 @@ namespace AsyncRedisDocuments.Index
                 return (null, null);
             }
 
-            // Compute a deterministic hash based on schema details
-            var indexHash = ComputeHash(schemaDetailsBuilder.ToString());
+            // Convert schema details to a Base64 string
+            var indexHash = schemaDetailsBuilder.ToString();
 
             var fields = schemaFields.ToArray();
             var definition = RediSearchIndex.OnHash()
@@ -69,28 +70,28 @@ namespace AsyncRedisDocuments.Index
             }
 
             // Create an instance of the type
-            var doc =  (IAsyncDocument)Activator.CreateInstance(documentType);
+            var doc = (IAsyncDocument)Activator.CreateInstance(documentType);
 
             return doc.IndexName();
         }
 
-
-
-        // Helper method to compute a SHA256 hash
-        private static string ComputeHash(string input)
+        // Helper method to compute a Base64 string
+        private static string ComputeBase64(string input)
         {
-            using (var sha256 = SHA256.Create())
-            {
-                var bytes = Encoding.UTF8.GetBytes(input);
-                var hashBytes = sha256.ComputeHash(bytes);
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
-            }
+            var bytes = Encoding.UTF8.GetBytes(input);
+            return Convert.ToBase64String(bytes);
         }
 
 
-        public static Dictionary<string, IndexType> GetProperties(Type type)
+        internal class PropertyData 
         {
-            var pairs = new Dictionary<string, IndexType>();
+            public IndexType IndexType { get; set; }
+            public string ClassType { get; set; }
+        }
+
+        private static Dictionary<string, PropertyData> GetProperties(Type type)
+        {
+            var pairs = new Dictionary<string, PropertyData>();
 
             // Get all properties of the class
             PropertyInfo[] properties = type.GetProperties();
@@ -112,7 +113,11 @@ namespace AsyncRedisDocuments.Index
                         if (indexTypeProperty != null)
                         {
                             var indexTypeValue = (IndexType)indexTypeProperty.GetValue(propertyInstance);
-                            pairs[property.Name] = indexTypeValue;
+                            pairs[property.Name] = new PropertyData 
+                            {
+                                IndexType = indexTypeValue,
+                                ClassType = propertyInstance.GetType().Name
+                            };
                         }
                     }
                 }

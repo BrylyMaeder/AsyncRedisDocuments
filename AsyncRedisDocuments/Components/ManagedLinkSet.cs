@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace AsyncRedisDocuments
 {
-    public class AsyncManagedLinkSet<TDocument> : AsyncLinkSet<TDocument>, IDeletable where TDocument : IAsyncDocument
+    public class ManagedLinkSet<TDocument> : AsyncLinkSet<TDocument>, IDeletable where TDocument : IAsyncDocument
     {
-        public AsyncManagedLinkSet(IAsyncDocument document, [CallerMemberName] string listName = "")
+        public ManagedLinkSet(IAsyncDocument document, [CallerMemberName] string listName = "")
             : base(document, listName)
         {
         }
 
         public new async Task SetAsync(List<TDocument> documents)
         {
-            var existingIds = await RedisSingleton.Database.SetMembersAsync(_setKey);
+            var existingIds = await RedisSingleton.Database.SetMembersAsync(_fullKey);
             foreach (var id in existingIds.Select(value => value.ToString()))
             {
-                var doc = AsyncDocumentFactory.Create<TDocument>(id);
+                var doc = DocumentFactory.Create<TDocument>(id);
                 await doc.DeleteAsync();
             }
 
@@ -32,7 +32,7 @@ namespace AsyncRedisDocuments
 
             if (removed)
             {
-                var document = AsyncDocumentFactory.Create<TDocument>(id);
+                var document = DocumentFactory.Create<TDocument>(id);
                 await document.DeleteAsync();
             }
 
@@ -41,10 +41,10 @@ namespace AsyncRedisDocuments
 
         public new async Task ClearAsync()
         {
-            var documentIds = await RedisSingleton.Database.SetMembersAsync(_setKey);
+            var documentIds = await RedisSingleton.Database.SetMembersAsync(_fullKey);
             foreach (var id in documentIds.Select(value => value.ToString()))
             {
-                var document = AsyncDocumentFactory.Create<TDocument>(id);
+                var document = DocumentFactory.Create<TDocument>(id);
                 await document.DeleteAsync();
             }
 

@@ -9,7 +9,7 @@ namespace AsyncRedisDocuments
 {
     public class UniqueProperty<TValue> : IndexedProperty<TValue>
     {
-        public UniqueProperty(IAsyncDocument document, TValue defaultValue = default, Func<TValue, Task<TValue>> getProcessingTask = null, Func<TValue, Task<TValue>> setProcessingTask = null, [CallerMemberName] string propertyName = null) : base(document, defaultValue, getProcessingTask, setProcessingTask, propertyName)
+        public UniqueProperty(IAsyncDocument document, TValue defaultValue = default, Func<TValue, Task<TValue>> getProcessingTask = null, Func<TValue, Task<TValue>> setProcessingTask = null, [CallerMemberName] string propertyName = null) : base(document, IndexType.Tag, defaultValue, getProcessingTask, setProcessingTask, propertyName)
         {
 
         }

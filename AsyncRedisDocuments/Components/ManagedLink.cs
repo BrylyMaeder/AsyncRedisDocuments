@@ -19,7 +19,7 @@ namespace AsyncRedisDocuments
             var currentId = await _linkedDocumentId.GetAsync();
             if (!string.IsNullOrEmpty(currentId))
             {
-                var currentDocument = AsyncDocumentFactory.Create<TDocument>(currentId);
+                var currentDocument = DocumentFactory.Create<TDocument>(currentId);
                 await currentDocument.DeleteAsync();
             }
 
@@ -31,7 +31,7 @@ namespace AsyncRedisDocuments
             var currentId = await _linkedDocumentId.GetAsync();
             if (!string.IsNullOrEmpty(currentId))
             {
-                var currentDocument = AsyncDocumentFactory.Create<TDocument>(currentId);
+                var currentDocument = DocumentFactory.Create<TDocument>(currentId);
                 await currentDocument.DeleteAsync();
             }
 

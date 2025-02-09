@@ -73,7 +73,7 @@ Index names are important, make sure you do not give a document an index name us
 
         public UniqueProperty<string> DisplayName => new(this);
 
-        public IndexedProperty<string> Biography => new(this);
+        public IndexedProperty<string> Biography => new(this, IndexType.ExactMatch);
 
         public string IndexName()
         {
@@ -102,7 +102,24 @@ var username = await user.DisplayName.GetAsync();
 Console.WriteLine($"Your new username is: {username}");
 ```
 
-The IndexedProperty is very similar, however it does not require unique validation and so it does not return a boolean for the SetAsync.
+The IndexedProperty is very similar, however it does not implement unique validation and so it does not return a boolean for the SetAsync.
+
+Available Index Types include:
+
+Looks for an exact string match. It works on numbers, bools, strings, etc.
+```csharp
+IndexType.ExactMatch
+```
+
+Allows numeric searches and operations
+```csharp
+IndexType.Numeric
+```
+
+Allows full text search support. Due to redis limitations, your text searches should be alphanumeric.
+```csharp
+IndexType.Text
+```
 
 ```csharp
 await user.Biography.SetAsync("Example");
