@@ -14,7 +14,7 @@ namespace AsyncRedisDocuments.Components
             _documentKey = document.GetKey();
             _propertyName = propertyName;
 
-            _fullKey = $"{_documentKey}{_propertyName}";
+            _fullKey = $"{_documentKey}:{_propertyName}";
 
             _document = document;
         }
