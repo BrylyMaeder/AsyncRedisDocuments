@@ -33,6 +33,22 @@ namespace AsyncRedisDocuments
             var documentIds = await RedisSingleton.Database.SetMembersAsync(_fullKey);
             return documentIds.Select(value => DocumentFactory.Create<TDocument>(value.ToString())).ToList();
         }
+
+        public async Task<Dictionary<string, TDocument>> GetAsDictionaryAsync()
+        {
+            var documentIds = await RedisSingleton.Database.SetMembersAsync(_fullKey);
+            var dictionary = new Dictionary<string, TDocument>();
+
+            foreach (var value in documentIds)
+            {
+                var key = value.ToString();
+                var document = DocumentFactory.Create<TDocument>(key);
+                dictionary[key] = document;
+            }
+
+            return dictionary;
+        }
+
         public async Task<bool> ContainsAsync(IAsyncDocument document) => await ContainsAsync(document.Id);
 
         public async Task<bool> ContainsAsync(string id)
@@ -40,7 +56,7 @@ namespace AsyncRedisDocuments
             return await RedisSingleton.Database.SetContainsAsync(_fullKey, id);
         }
 
-        public async Task<bool> AddAsync(TDocument document)
+        public async Task<bool> AddOrUpdateAsync(TDocument document)
         {
             if (document == null) return false;
 
