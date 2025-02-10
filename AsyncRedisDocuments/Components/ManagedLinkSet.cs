@@ -14,7 +14,7 @@ namespace AsyncRedisDocuments
         {
         }
 
-        public new async Task SetAsync(List<TDocument> documents)
+        public override async Task SetAsync(List<TDocument> documents)
         {
             var existingIds = await RedisSingleton.Database.SetMembersAsync(_fullKey);
             foreach (var id in existingIds.Select(value => value.ToString()))
@@ -26,7 +26,7 @@ namespace AsyncRedisDocuments
             await base.SetAsync(documents);
         }
 
-        public new async Task<bool> RemoveAsync(string id)
+        public override async Task<bool> RemoveAsync(string id)
         {
             var removed = await base.RemoveAsync(id);
 
@@ -39,7 +39,7 @@ namespace AsyncRedisDocuments
             return removed;
         }
 
-        public new async Task ClearAsync()
+        public override async Task ClearAsync()
         {
             var documentIds = await RedisSingleton.Database.SetMembersAsync(_fullKey);
             foreach (var id in documentIds.Select(value => value.ToString()))

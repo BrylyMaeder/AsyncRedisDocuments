@@ -4,12 +4,14 @@ using AsyncRedisDocuments.Index;
 using Sample;
 
 
-RedisSingleton.Initialize("host", 13464, "password");
+RedisSingleton.Initialize("host", port: 0000, "password");
 
 var user = new User
 {
     Id = "myUser",
 };
 
-var car = new Car();
+var friendship = new Friendship {Id = Guid.NewGuid().ToString() };
+await user.Friendships.AddOrUpdateAsync(friendship);
+await user.Friendships.RemoveAsync(friendship);
 
