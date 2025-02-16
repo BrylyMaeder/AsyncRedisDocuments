@@ -22,11 +22,11 @@ namespace AsyncRedisDocuments
 
     public class DocumentAnalyzer
     {
-        private static Dictionary<Type, DocumentAnalysisResult> _cachedDocumentResults = new Dictionary<Type, DocumentAnalysisResult>();
+        private static Dictionary<string, DocumentAnalysisResult> _cachedDocumentResults = new Dictionary<string, DocumentAnalysisResult>();
 
         public static DocumentAnalysisResult Analyze<TDocument>(TDocument document) where TDocument : IAsyncDocument
         {
-            if (_cachedDocumentResults.TryGetValue(typeof(TDocument), out var value))
+            if (_cachedDocumentResults.TryGetValue(document.IndexName(), out var value))
             {
                 return value;
             }
@@ -40,7 +40,7 @@ namespace AsyncRedisDocuments
 
             Traverse(document, analysis.IndexableEntries, visited);
 
-            _cachedDocumentResults[typeof(TDocument)] = analysis;
+            _cachedDocumentResults[document.IndexName()] = analysis;
 
             return analysis;
         }

@@ -19,7 +19,20 @@ namespace Sample
 
         public string IndexName()
         {
-            return "cars";
+            return "cars:car1";
+        }
+    }
+
+    public class Car2 : IAsyncDocument 
+    {
+        [Indexed]
+        public AsyncProperty<string> Description2 => new(this);
+
+        public string Id { get; set; }
+
+        public string IndexName()
+        {
+            return "cars:car2";
         }
     }
 }

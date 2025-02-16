@@ -58,7 +58,14 @@ namespace AsyncRedisDocuments.Index.Generation
         {
             try { await RedisSingleton.Database.DropIndexAsync(indexName); }
             catch { /* Ignored */ }
-            await CreateNewIndexAsync(indexName, definition, hash);
+            try
+            {
+                await CreateNewIndexAsync(indexName, definition, hash);
+            }
+            catch 
+            {
+                
+            }
         }
 
         private static async Task<IndexDocument> CreateNewIndexAsync(string indexName, RediSearchIndexDefinition definition, string hash)
