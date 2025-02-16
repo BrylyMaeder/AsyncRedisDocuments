@@ -11,7 +11,7 @@ namespace Sample
     public class Car : IAsyncDocument
     {
         [Indexed]
-        public AsyncProperty<string> Description2 => new(this);
+        public AsyncProperty<string> Description => new(this);
         [Unique]
         public AsyncProperty<string> DisplayName => new(this);
 

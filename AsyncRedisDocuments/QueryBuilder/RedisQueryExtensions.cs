@@ -72,4 +72,10 @@ namespace AsyncRedisDocuments
             return await RedisSearchFunctions.SelectAsync<TDocument>(query, selectedFields, pageNumber, pageSize);
         }
     }
+
+    public class GlobalSettings 
+    {
+        public AsyncProperty<string> Setting1 => new AsyncProperty<string>();
+        public AsyncProperty<int> Setting2 => new AsyncProperty<int>();
+    }
 }
