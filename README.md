@@ -69,7 +69,7 @@ For global settings that don't require document-specific names:
 
 
 ```csharp
-public class GlobalSettings : BaseComponent
+public class GlobalSettings
 {
     public AsyncProperty<string> ApplicationName { get; set; }
 }
