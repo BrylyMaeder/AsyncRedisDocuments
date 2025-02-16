@@ -11,11 +11,11 @@ for (int i = 0; i < 10; i++)
 {
     var car = new Car { Id = $"test{i}" };
 
-    await car.Description2.SetAsync("test description");
+    await car.Description.SetAsync("test description");
     await car.DisplayName.SetAsync("test");
 }
 
-var results = await QueryBuilder.Query<Car>().SelectAsync(s => s.Description2, s => s.DisplayName);
+var results = await QueryBuilder.Query<Car>().SelectAsync(s => s.Description, s => s.DisplayName);
 
 foreach (var result in results)
 {
