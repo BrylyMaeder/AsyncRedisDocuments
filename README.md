@@ -1,6 +1,6 @@
 ## Available on Nuget
 ```csharp
-https://www.nuget.org/packages/AsyncRedisDocuments/
+nuget install AsyncRedisDocuments
 ```
 
 This system provides a set of components and patterns for managing documents and related data structures in a Redis-backed document storage system. It allows for flexibility, scalability, and easy integration into various types of applications.
@@ -126,12 +126,6 @@ The system includes various extension methods to simplify working with Redis que
 - **`SelectAsync<TDocument>()`** : Selects specific fields from documents based on LINQ expressions.
  
 - **`PagedSelectAsync<TDocument>()`** : Paginates results while selecting specific fields.
-
-## Acknowledgements
- - [StackExchangeRedis](https://github.com/StackExchange/StackExchange.Redis)
- - [RediSearchClient](https://github.com/tombatron/RediSearchClient)
-
-
 
 ## Authors
 
