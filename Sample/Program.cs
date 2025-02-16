@@ -5,7 +5,7 @@ using AsyncRedisDocuments.QueryBuilder;
 using Sample;
 
 
-RedisSingleton.Initialize("redis-10220.c91.us-east-1-3.ec2.redns.redis-cloud.com", 10220, "ZrQZkNdkfJzpNwIWDdT2cZEgp5whsI7M");
+RedisSingleton.Initialize("host", port:10220, "password");
 
 for (int i = 0; i < 10; i++) 
 {
