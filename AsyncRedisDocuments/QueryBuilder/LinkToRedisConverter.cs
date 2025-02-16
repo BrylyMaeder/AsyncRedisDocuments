@@ -24,7 +24,7 @@ namespace AsyncRedisDocuments.QueryBuilder
 
 
             // Optionally, clean up extra whitespace.
-            result = $"'{Regex.Replace(result, @"^\s+|\s+$", "")}'";
+            result = $"'{result}'";
 
             return result;
         }
@@ -53,7 +53,7 @@ namespace AsyncRedisDocuments.QueryBuilder
             else if (typeIndicator == $"{IndexType.Text}")
             {
                 value = EscapeTextSearch(value); // Keep necessary characters while escaping.
-                return op == "==" ? $"@{field}:{value}" : $"-@{field}:{value}";
+                return op == "==" ? $"@{field}:{value}`" : $"`-@{field}:{value}";
             }
             // Process tag conditions.
             else if (typeIndicator == $"{IndexType.Tag}")
@@ -77,28 +77,26 @@ namespace AsyncRedisDocuments.QueryBuilder
             if (string.IsNullOrEmpty(input)) return input;
 
             return input
-                .Replace("\\", "\\\\")
-                .Replace("-", "\\-")
-                .Replace(":", "\\:")
-                .Replace("\"", "\\\"")
-                .Replace("'", "\\'")
-                .Replace(".", "\\.")
-                .Replace(",", "\\,")
-                .Replace("(", "\\(")
-                .Replace(")", "\\)")
-                .Replace("[", "\\[")
-                .Replace("]", "\\]")
-                .Replace("{", "\\{")
-                .Replace("}", "\\}")
-                .Replace("|", "\\|")
-                .Replace("&", "\\&")
-                .Replace("~", "\\~")
-                .Replace("!", "\\!")
-                .Replace("*", "\\*")
-                .Replace("?", "\\?")
-                .Replace("^", "\\^")
-                .Replace("$", "\\$")
-                .Replace("@", "\\@");
+                .Replace("-", @"\-")
+                .Replace(":", @"\:")
+                .Replace("'", @"\'")
+                .Replace(".", @"\.")
+                .Replace(",", @"\,")
+                .Replace("(", @"\(")
+                .Replace(")", @"\)")
+                .Replace("[", @"\[")
+                .Replace("]", @"\]")
+                .Replace("{", @"\{")
+                .Replace("}", @"\}")
+                .Replace("|", @"\|")
+                .Replace("&", @"\&")
+                .Replace("~", @"\~")
+                .Replace("!", @"\!")
+                .Replace("*", @"\*")
+                .Replace("?", @"\?")
+                .Replace("^", @"\^")
+                .Replace("$", @"\$")
+                .Replace("@", @"\@");
         }
     }
 

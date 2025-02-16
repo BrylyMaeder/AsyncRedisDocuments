@@ -53,8 +53,17 @@ namespace AsyncRedisDocuments.QueryBuilder
 
         protected override Expression VisitMember(MemberExpression node)
         {
-            // Extract the member name.
             var memberName = ExpressionHelper.GetMemberName(node);
+
+            // If the member is part of a captured constant expression (e.g., displayName)
+            if (node.Expression != null && node.Expression.NodeType == ExpressionType.Constant)
+            {
+                var value = node.GetValue();
+                AppendConstant(value);
+                return node;
+            }
+
+            // Extract the member name.
             string delimiter = "";
 
             // Get the property info for the member.
@@ -158,9 +167,7 @@ namespace AsyncRedisDocuments.QueryBuilder
         {
             if (value is string)
             {
-                string cleaned = Regex.Replace(value.ToString(), @"[^a-zA-Z0-9_,.!?]", "*");
-
-                _builder.Append($"{cleaned}");
+                _builder.Append($"{value}");
             }
             else if (value is bool)
             {

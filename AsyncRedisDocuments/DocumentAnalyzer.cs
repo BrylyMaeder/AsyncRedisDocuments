@@ -36,6 +36,7 @@ namespace AsyncRedisDocuments
                 IndexName = document.IndexName(),
                 IndexableEntries = new List<IndexEntry>()
             };
+
             var visited = new HashSet<object>();
 
             Traverse(document, analysis.IndexableEntries, visited);
@@ -54,9 +55,6 @@ namespace AsyncRedisDocuments
             var properties = current.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var property in properties)
             {
-                var value = property.GetValue(current);
-                if (value == null) continue;
-
                 var indexedAttribute = property.GetCustomAttribute<IndexedAttribute>();
                 if (indexedAttribute != null)
                 {

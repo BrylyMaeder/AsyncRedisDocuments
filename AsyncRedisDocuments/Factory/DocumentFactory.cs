@@ -13,12 +13,17 @@ namespace AsyncRedisDocuments
         public static TDocument Create<TDocument>(string id) where TDocument : IAsyncDocument
         {
             var instance = CreateEmpty(typeof(TDocument));
+
+            // Redis queries return the ID with the index path included; let's strip that out:
+            var index = instance.IndexName();
+            id = id.Replace($"{index}:", "");
+
             instance.Id = id;
 
             return (TDocument)instance;
         }
 
-        public static IAsyncDocument CreateEmpty(Type asyncDocumentType)
+        internal static IAsyncDocument CreateEmpty(Type asyncDocumentType)
         {
             if (asyncDocumentType == null)
                 throw new ArgumentNullException(nameof(asyncDocumentType));
