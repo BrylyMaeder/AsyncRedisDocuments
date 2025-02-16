@@ -5,7 +5,8 @@ using AsyncRedisDocuments.QueryBuilder;
 using Sample;
 
 
-RedisSingleton.Initialize("host", port:10220, "password");
+RedisSingleton.Initialize("host", port: 10220, "password");
+
 
 for (int i = 0; i < 10; i++) 
 {
@@ -18,9 +19,12 @@ for (int i = 0; i < 10; i++)
     await car2.Description2.SetAsync("test2");
 }
 
-var results = await QueryBuilder.Query<Car>().SelectAsync(s => s.Description, s => s.DisplayName);
+var query =  QueryBuilder.Query<Car>(s => s.DisplayName == "test");
+var results = await query.ToListAsync();
+
+var test = LinqToRedisConverter.Convert(query);
 
 foreach (var result in results)
 {
-    Console.WriteLine(result.Properties);
+    Console.WriteLine(result.Id);
 }

@@ -8,6 +8,10 @@ namespace AsyncRedisDocuments.QueryBuilder
 {
     public static class LinqToRedisConverter
     {
+        public static string Convert(RedisQuery query)
+        {
+            return Convert(query.LinqQuery);
+        }
         public static string Convert(string linq)
         {
             // Convert logical operators:
@@ -15,19 +19,12 @@ namespace AsyncRedisDocuments.QueryBuilder
             linq = Regex.Replace(linq, @"\bOR\b", " | ");
 
             // Convert each condition. The regex matches:
-            //   @FieldName + type indicator (#,$,~) + colon + operator + value
-            linq = Regex.Replace(linq,
-                @"@(\w+)([#\$~]):(==|!=|>=|<=|>|<)((""[^""]*""|\d+))",
-                new MatchEvaluator(ConditionEvaluator));
+
+            var result = Regex.Replace(linq, @"\(@(\w+)\|(\w+)\|[:]?([<>!=]=?|==)\s*(\S+)\)", new MatchEvaluator(ConditionEvaluator));
+
 
             // Optionally, clean up extra whitespace.
-            var result = $"'{Regex.Replace(linq, @"^\s+|\s+$", "")}'";
-
-            foreach (IndexType indexType in Enum.GetValues(typeof(IndexType)))
-            {
-                string target = $"|{indexType}|";
-                result = result.Replace(target, "");
-            }
+            result = $"'{Regex.Replace(result, @"^\s+|\s+$", "")}'";
 
             return result;
         }
@@ -40,7 +37,7 @@ namespace AsyncRedisDocuments.QueryBuilder
             string value = m.Groups[4].Value;
 
             // Process numeric conditions.
-            if (typeIndicator == $"|{IndexType.Numeric}|")
+            if (typeIndicator == $"{IndexType.Numeric}")
             {
                 switch (op)
                 {
@@ -52,24 +49,26 @@ namespace AsyncRedisDocuments.QueryBuilder
                     case "<=": return $"@{field}:[-inf {value}]";
                 }
             }
-            // Process text conditions.
-            else if (typeIndicator == $"|{IndexType.Text}|")
+            // Process text conditions (full-text search).
+            else if (typeIndicator == $"{IndexType.Text}")
             {
-                string txt = value.Trim('"');
-                // Strip non-alphanumeric characters for text-based searches.
-                txt = Regex.Replace(txt, @"[^a-zA-Z0-9]", string.Empty);
-                return op == "==" ? $"@{field}:{txt}" : $"-@{field}:{txt}";
+                value = EscapeTextSearch(value); // Keep necessary characters while escaping.
+                return op == "==" ? $"@{field}:{value}" : $"-@{field}:{value}";
             }
             // Process tag conditions.
-            else if (typeIndicator == $"|{IndexType.Tag}|")
+            else if (typeIndicator == $"{IndexType.Tag}")
             {
-                string tag = value.Trim('"');
-                // Escape special characters for tag-based searches.
-                tag = EscapeSpecialCharacters(tag);
-                return op == "==" ? $"@{field}:{{{tag}}}" : $"-@{field}:{{{tag}}}";
+                value = EscapeSpecialCharacters(value);
+                return op == "==" ? $"@{field}:{{{value}}}" : $"-@{field}:{{{value}}}";
             }
-            // If none of the conditions match, simply return the match without the type indicator.
+            // If none of the conditions match, return as a raw field-value pair.
             return $"{field}:{value}";
+        }
+
+        private static string EscapeTextSearch(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+            return Regex.Replace(input, @"[^\w\s]", "").Replace(" ", "\\ ");
         }
 
         // Method to escape special characters for Redis tag queries.
