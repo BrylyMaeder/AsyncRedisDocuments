@@ -1,4 +1,5 @@
 ﻿using AsyncRedisDocuments.Components;
+
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace AsyncRedisDocuments
 {
     public class AsyncLinkSet<TDocument> : BaseComponent where TDocument : IAsyncDocument
     {
-        public AsyncLinkSet(IAsyncDocument document, [CallerMemberName] string propertyName = "") : base(document, propertyName)
+        public AsyncLinkSet(IAsyncDocument document = null, [CallerMemberName] string propertyName = "") : base(document, propertyName)
         {
 
         }

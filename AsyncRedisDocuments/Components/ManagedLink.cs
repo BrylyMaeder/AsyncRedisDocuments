@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -8,7 +9,7 @@ namespace AsyncRedisDocuments
 {
     public class ManagedLink<TDocument> : AsyncLink<TDocument>, IDeletable where TDocument : IAsyncDocument
     {
-        public ManagedLink(IAsyncDocument document, [CallerMemberName] string linkName = "")
+        public ManagedLink(IAsyncDocument document = null, [CallerMemberName] string linkName = "")
             : base(document, linkName)
         {
         }

@@ -1,7 +1,9 @@
 ﻿using AsyncRedisDocuments.Components;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,7 +11,7 @@ namespace AsyncRedisDocuments
 {
     public class AsyncList<TKey> : BaseComponent
     {
-        public AsyncList(IAsyncDocument document, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = null) : base(document, propertyName) 
+        public AsyncList(IAsyncDocument document = null, [CallerMemberName] string propertyName = null) : base(document, propertyName) 
         {
 
         }

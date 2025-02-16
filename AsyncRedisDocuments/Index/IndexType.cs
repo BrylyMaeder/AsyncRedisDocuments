@@ -6,6 +6,7 @@ namespace AsyncRedisDocuments
 {
     public enum IndexType
     {
+        Auto,
         Tag,
         Numeric,
         Text

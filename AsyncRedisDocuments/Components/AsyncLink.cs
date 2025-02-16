@@ -1,4 +1,5 @@
 ﻿using AsyncRedisDocuments.Components;
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -9,10 +10,9 @@ namespace AsyncRedisDocuments
 {
     public class AsyncLink<TDocument> : BaseComponent where TDocument : IAsyncDocument
     {
-        protected readonly IAsyncDocument _asyncDocument;
         protected readonly string _linkName;
 
-        public AsyncLink(IAsyncDocument document, [CallerMemberName] string propertyName = "") : base(document, propertyName) 
+        public AsyncLink(IAsyncDocument document = null, [CallerMemberName] string propertyName = "") : base(document, propertyName) 
         {
 
         }
@@ -57,7 +57,7 @@ namespace AsyncRedisDocuments
             await _linkedDocumentId.ClearAsync();
         }
 
-        protected AsyncProperty<string> _linkedDocumentId => new AsyncProperty<string>(_asyncDocument, propertyName: _linkName);
+        protected AsyncProperty<string> _linkedDocumentId => new AsyncProperty<string>(_document, propertyName: _linkName);
     }
 
 

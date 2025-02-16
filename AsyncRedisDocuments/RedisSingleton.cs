@@ -1,4 +1,4 @@
-﻿using AsyncRedisDocuments.Index;
+﻿using AsyncRedisDocuments.Index.Generation;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace AsyncRedisDocuments
             // Cache the IDatabase instance directly in the constructor
             _cachedDatabase = _connectionMultiplexer.GetDatabase();
 
-            IndexManager.InitializeIndexes();
+            IndexBuilder.InitializeIndexes();
         }
 
         public static void Initialize(string host, int port, string password)

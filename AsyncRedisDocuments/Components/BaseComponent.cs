@@ -1,4 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace AsyncRedisDocuments.Components
 {
@@ -9,14 +12,21 @@ namespace AsyncRedisDocuments.Components
         protected string _propertyName { get; set; }
         protected string _fullKey { get; set; }
 
-        public BaseComponent(IAsyncDocument document, [CallerMemberName] string propertyName = "")
+        public BaseComponent(IAsyncDocument document = null, [CallerMemberName] string propertyName = "")
         {
-            _documentKey = document.GetKey();
-            _propertyName = propertyName;
-
-            _fullKey = $"{_documentKey}:{_propertyName}";
+            if (document == null)
+            {
+                _documentKey = "global_settings";
+            }
+            else
+            {
+                _documentKey = document.GetKey();
+            }
 
             _document = document;
+
+            _propertyName = propertyName;
+            _fullKey = $"{_documentKey}:{_propertyName}";
         }
     }
 }

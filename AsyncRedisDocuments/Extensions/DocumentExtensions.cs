@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,10 @@ namespace AsyncRedisDocuments
 {
     public static class AsyncDocumentExtensions
     {
-        public static string GetKey(this IAsyncDocument document) => $"{document.IndexName()}:{document.Id}";
+        public static string GetKey(this IAsyncDocument document) 
+        {
+            return $"{document.IndexName()}:{document.Id}";
+        }
 
         public static async Task<bool> ExistsAsync(this IAsyncDocument document)
         {
@@ -41,7 +45,6 @@ namespace AsyncRedisDocuments
                     }
                 }
             }
-
 
             const int batchSize = 100; //Cleanup dead keys
             var cursor = 0L;

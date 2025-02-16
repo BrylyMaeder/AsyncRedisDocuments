@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AsyncRedisDocuments.Index
+namespace AsyncRedisDocuments.Helper
 {
     public static class IndexTypeHelper
     {
-        public static IndexType GetIndexType<TValue>()
+        public static IndexType GetIndexType(Type type)
         {
-            if (IsNumericType<TValue>())
+            if (IsNumericType(type))
             {
                 return IndexType.Numeric;
             }
-            else if (typeof(TValue) == typeof(string))
+            else if (type == typeof(string))
             {
                 return IndexType.Text;
             }
@@ -22,9 +22,13 @@ namespace AsyncRedisDocuments.Index
             }
         }
 
-        private static bool IsNumericType<T>()
+        public static IndexType GetIndexType<TValue>()
         {
-            Type type = typeof(T);
+            return GetIndexType(typeof(TValue));
+        }
+
+        private static bool IsNumericType(Type type)
+        {
             TypeCode typeCode = Type.GetTypeCode(type);
 
             switch (typeCode)

@@ -9,7 +9,7 @@ namespace AsyncRedisDocuments
     public static class RedisExtensions
     {
         // Converts a value of type T into RedisValue for storage
-        public static RedisValue ConvertToRedisValue<T>(this object value)
+        internal static RedisValue ConvertToRedisValue<T>(this object value)
         {
             if (value == null)
                 return RedisValue.Null;
@@ -18,7 +18,11 @@ namespace AsyncRedisDocuments
                 return value.ToString();
 
             if (typeof(T) == typeof(DateTime))
-                return ((DateTime)value).ToString("o");
+            {
+                var dateTime = (DateTime)value;
+                var unixTimestamp = new DateTimeOffset(dateTime).ToUnixTimeSeconds();
+                return unixTimestamp.ToString(); // Store as Unix timestamp
+            }
 
             if (typeof(T) == typeof(bool))
                 return (bool)value ? "1" : "0";  // store bool as "1" or "0"
@@ -54,7 +58,11 @@ namespace AsyncRedisDocuments
                 return (T)Enum.Parse(typeof(T), value);
 
             if (typeof(T) == typeof(DateTime))
-                return (T)(object)DateTime.Parse(value);
+            {
+                var unixTimestamp = long.Parse(value);
+                var dateTime = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).DateTime;
+                return (T)(object)dateTime;
+            }
 
             if (typeof(T) == typeof(bool))
                 return (T)(object)(value == "1"); // Convert "1" to true, anything else to false
