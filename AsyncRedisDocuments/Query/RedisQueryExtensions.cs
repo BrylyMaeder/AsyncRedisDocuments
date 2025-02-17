@@ -10,7 +10,7 @@ namespace AsyncRedisDocuments
 {
     public static class RedisQueryExtensions
     {
-        public static RedisQuery<TDocument> Query<TDocument>(this RedisQuery<TDocument> query, Expression<Func<TDocument, bool>> expression) where TDocument : IAsyncDocument
+        public static RedisQuery<TDocument> Where<TDocument>(this RedisQuery<TDocument> query, Expression<Func<TDocument, bool>> expression) where TDocument : IAsyncDocument
         {
             var q = QueryBuilder.Query<TDocument>(expression);
 
