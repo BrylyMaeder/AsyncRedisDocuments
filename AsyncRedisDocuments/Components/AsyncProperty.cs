@@ -1,7 +1,7 @@
 ﻿using AsyncRedisDocuments.Components;
 using AsyncRedisDocuments.Helper;
 using AsyncRedisDocuments.Index;
-using AsyncRedisDocuments.QueryBuilder;
+using AsyncRedisDocuments;
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace AsyncRedisDocuments.QueryBuilder
+namespace AsyncRedisDocuments
 {
     public static class LinqToRedisConverter
     {

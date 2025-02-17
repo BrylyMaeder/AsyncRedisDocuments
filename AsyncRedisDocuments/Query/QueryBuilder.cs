@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace AsyncRedisDocuments.QueryBuilder
+namespace AsyncRedisDocuments
 {
-
     public static class QueryBuilder
     {
         public static RedisQuery<TDocument> Query<TDocument>() where TDocument : IAsyncDocument

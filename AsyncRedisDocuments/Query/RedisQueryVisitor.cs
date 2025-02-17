@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace AsyncRedisDocuments.QueryBuilder
+namespace AsyncRedisDocuments
 {
     public class RedisQueryVisitor : ExpressionVisitor
     {

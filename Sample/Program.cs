@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using AsyncRedisDocuments;
 using AsyncRedisDocuments.Index;
-using AsyncRedisDocuments.QueryBuilder;
+using AsyncRedisDocuments;
 using Sample;
 
 

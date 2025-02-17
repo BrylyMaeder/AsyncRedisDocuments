@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using AsyncRedisDocuments.QueryBuilder;
+using AsyncRedisDocuments;
 using System.Linq.Expressions;
 using AsyncRedisDocuments.Models;
 
@@ -10,6 +10,15 @@ namespace AsyncRedisDocuments
 {
     public static class RedisQueryExtensions
     {
+        public static RedisQuery<TDocument> Where<TDocument>(this RedisQuery<TDocument> query) where TDocument : IAsyncDocument
+        {
+            var q = QueryBuilder.Query<TDocument>();
+
+            query.Query += $" {q.Query}";
+
+            return query;
+        }
+
         public static async Task<(List<TDocument> Documents, int TotalCount, int TotalPages)> ToPagedListAsync<TDocument>(this RedisQuery<TDocument> query, int page = 1, int pageSize = 1000) where TDocument : IAsyncDocument
         {
             var results = await RedisSearchFunctions.Execute(query, page, pageSize);

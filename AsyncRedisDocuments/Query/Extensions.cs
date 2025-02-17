@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AsyncRedisDocuments.QueryBuilder
+namespace AsyncRedisDocuments
 {
     public static class AsyncPropertyExtensions
     {

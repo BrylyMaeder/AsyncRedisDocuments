@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace AsyncRedisDocuments.QueryBuilder
+namespace AsyncRedisDocuments
 {
     public static class RedisSearchFunctions
     {

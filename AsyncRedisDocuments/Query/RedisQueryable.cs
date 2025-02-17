@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Collections;
 
-namespace AsyncRedisDocuments.QueryBuilder
+namespace AsyncRedisDocuments
 {
     public class RedisQueryable<T> : IQueryable<T>
     {
