@@ -22,7 +22,8 @@ namespace AsyncRedisDocuments.QueryBuilder
 
             var result = Regex.Replace(linq, @"\(@(\w+)\|(\w+)\|[:]?([<>!=]=?|==)\s*(\S+)\)", new MatchEvaluator(ConditionEvaluator));
 
-
+            if (result.StartsWith("(("))
+                result = result.Substring(1);
             // Optionally, clean up extra whitespace.
             result = $"'{result}'";
 
@@ -41,28 +42,28 @@ namespace AsyncRedisDocuments.QueryBuilder
             {
                 switch (op)
                 {
-                    case "==": return $"@{field}:[{value} {value}]";
-                    case "!=": return $"-@{field}:[{value} {value}]";
-                    case ">": return $"@{field}:[{value} +inf]";
-                    case ">=": return $"@{field}:[{value} +inf]";
-                    case "<": return $"@{field}:[-inf {value}]";
-                    case "<=": return $"@{field}:[-inf {value}]";
+                    case "==": return $"(@{field}:[{value} {value}])";
+                    case "!=": return $"-(@{field}:[{value} {value}])";
+                    case ">": return $"(@{field}:[{value} +inf])";
+                    case ">=": return $"(@{field}:[{value} +inf])";
+                    case "<": return $"(@{field}:[-inf {value}])";
+                    case "<=": return $"(@{field}:[-inf {value}])";
                 }
             }
             // Process text conditions (full-text search).
             else if (typeIndicator == $"{IndexType.Text}")
             {
                 value = EscapeTextSearch(value); // Keep necessary characters while escaping.
-                return op == "==" ? $"@{field}:{value}`" : $"`-@{field}:{value}";
+                return op == "==" ? $"(@{field}:{value})" : $"-(@{field}:{value})";
             }
             // Process tag conditions.
             else if (typeIndicator == $"{IndexType.Tag}")
             {
                 value = EscapeSpecialCharacters(value);
-                return op == "==" ? $"@{field}:{{{value}}}" : $"-@{field}:{{{value}}}";
+                return op == "==" ? $"(@{field}:{{{value}}})" : $"-(@{field}:{{{value}}})";
             }
             // If none of the conditions match, return as a raw field-value pair.
-            return $"{field}:{value}";
+            return $"({field}:{value})";
         }
 
         private static string EscapeTextSearch(string input)

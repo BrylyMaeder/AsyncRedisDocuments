@@ -20,7 +20,7 @@ for (int i = 0; i < 10; i++)
 }
 
 var displayName = "test@gmail.com";
-var query = QueryBuilder.Query<Car>(s => s.DisplayName == displayName);
+var query = QueryBuilder.Query<Car>(s => s.DisplayName == displayName || s.Description == "test");
 var results = await query.ToListAsync();
 
 var test = LinqToRedisConverter.Convert(query);
