@@ -14,7 +14,7 @@ namespace AsyncRedisDocuments
 
         public AsyncLink(IAsyncDocument document = null, [CallerMemberName] string propertyName = "") : base(document, propertyName) 
         {
-
+            _linkName = propertyName;
         }
 
         public virtual async Task SetAsync(string id)

@@ -12,7 +12,7 @@ namespace AsyncRedisDocuments
         {
         }
 
-        public TDocument Document => DocumentFactory.Create<TDocument>(_document.Id);
+        public TDocument Document => DocumentFactory.Create<TDocument>($"{_document.Id}:{_propertyName}");
 
         public async Task DeleteAsync()
         {

@@ -1,13 +1,14 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using AsyncRedisDocuments;
-using AsyncRedisDocuments.Index;
-using AsyncRedisDocuments;
 using Sample;
 
 
 RedisSingleton.Initialize("host", port: 0000, "password");
 
+var test2 = new Person();
+await test2.Link.SetAsync(test2);
 
+return;
 for (int i = 0; i < 10; i++)
 {
     var car = new Car { Id = $"test{i}" };

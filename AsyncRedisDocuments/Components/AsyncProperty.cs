@@ -32,26 +32,27 @@ namespace AsyncRedisDocuments
             _getProcessingTask = getProcessingTask;
             _setProcessingTask = setProcessingTask;
 
-            // Check if the property has an IndexedAttribute
             var propertyInfo = GetType().GetProperty(propertyName);
-            var indexedAttribute = propertyInfo?.GetCustomAttribute<IndexedAttribute>();
+            if (propertyInfo == null)
+                return; 
 
-            if (indexedAttribute != null)
+            var indexedAttribute = propertyInfo.GetCustomAttribute<IndexedAttribute>();
+            if (indexedAttribute == null)
+                return; 
+
+            _isIndexed = true;
+            _indexType = indexedAttribute.IndexType;
+            if (_indexType == IndexType.Auto)
             {
-                _isIndexed = true;
-                _indexType = indexedAttribute.IndexType;
-                if (_indexType == IndexType.Auto)
-                {
-                    _indexType = IndexTypeHelper.GetIndexType<TValue>();
-                }
-
-                _isUnique = indexedAttribute is UniqueAttribute;
-
-                if (_document == null)
-                    throw new NotSupportedException("Document is required for Indexed or Unique properties.");
-
-                _indexName = _document.IndexName();
+                _indexType = IndexTypeHelper.GetIndexType<TValue>();
             }
+
+            _isUnique = indexedAttribute is UniqueAttribute;
+
+            if (_document == null)
+                throw new NotSupportedException("Document is required for Indexed or Unique properties.");
+
+            _indexName = _document.IndexName();
         }
 
         public virtual async Task<TValue> GetAsync()

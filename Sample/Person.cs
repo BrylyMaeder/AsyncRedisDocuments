@@ -13,7 +13,7 @@ namespace Sample
         public string Id { get; set; } 
 
         public AsyncProperty<string> FridgeName => new(this);
-
+        public AsyncLink<Person> Link => new(this);
 
         public string IndexName()
         {

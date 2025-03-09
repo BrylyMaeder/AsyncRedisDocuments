@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace AsyncRedisDocuments
@@ -45,22 +46,31 @@ namespace AsyncRedisDocuments
 
         internal static object GetValue(this MemberExpression exp)
         {
-            // expression is ConstantExpression or FieldExpression
-            if (exp.Expression is ConstantExpression)
+            if (exp.Expression is ConstantExpression constantExp)
             {
-                return (((ConstantExpression)exp.Expression).Value)
-                        .GetType()
-                        .GetField(exp.Member.Name)
-                        .GetValue(((ConstantExpression)exp.Expression).Value);
+                try
+                {
+                    var target = constantExp.Value;
+                    if (exp.Member is FieldInfo field)
+                        return field.GetValue(target);
+                    if (exp.Member is PropertyInfo prop)
+                        return prop.GetValue(target);
+                }
+                catch
+                {
+                    throw new InvalidOperationException("Failed to get value from constant expression.");
+                }
             }
-            else if (exp.Expression is MemberExpression)
+            else if (exp.Expression is MemberExpression memberExp)
             {
-                return GetValue((MemberExpression)exp.Expression);
+                var instance = GetValue(memberExp); // Recursively get parent object
+                if (exp.Member is FieldInfo field)
+                    return field.GetValue(instance);
+                if (exp.Member is PropertyInfo prop)
+                    return prop.GetValue(instance);
             }
-            else
-            {
-                throw new NotImplementedException();
-            }
+
+            throw new NotImplementedException("Unsupported expression type.");
         }
     }
 }

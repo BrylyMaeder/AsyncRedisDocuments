@@ -115,29 +115,30 @@ namespace AsyncRedisDocuments
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            var value = node.Arguments[1].ToString();
-            value = value.Replace("\"", "");
+            object value = null;
+            if (node.Arguments[1] is MemberExpression expression)
+            {
+                value = expression.GetValue();
+            }
+            else value = node.Arguments[1];
+
+            if (value is string)
+                value = value.ToString().Replace("\"", "");
 
             if (node.Method.Name == "Contains")
             {
-                // Format: @Field:*value*
-                Visit(node.Object);
-                _builder.Append($"*{value}*");
                 Visit(node.Arguments[0]);
+                _builder.Append($"*{value}*");
                 return node;
             }
             else if (node.Method.Name == "StartsWith")
             {
-                // Format: @Field:value*
-                Visit(node.Object);
                 Visit(node.Arguments[0]);
                 _builder.Append($"{value}*");
                 return node;
             }
             else if (node.Method.Name == "EndsWith")
             {
-                // Format: @Field:*value
-                Visit(node.Object);
                 _builder.Append($"*{value}");
                 Visit(node.Arguments[0]);
                 return node;
